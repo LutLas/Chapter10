@@ -1,6 +1,20 @@
 fun main(){
-    val catContest = Contest<Cat>()
-    val petContest = Contest<Pet>()
+
+    val catVet = Vet<Cat>()
+    val fishVet = Vet<Fish>()
+    val petVet = Vet<Pet>()
+
+    catVet.treat(Cat("Garfeild"))
+    petVet.treat(Cat("Katsu"))
+    petVet.treat(Fish("Nsomba"))
+    fishVet.treat(Fish("Kapenta"))
+
+    val catContest = Contest(catVet)
+    val petContest = Contest(petVet)
+    val dogContest:Contest<Dog> = Contest(petVet)
+
+    dogContest.vet.treat(Dog("Imbwa"))
+
     //val fishContest = Contest(Fish("Finny McGraw"))
 
     catContest.addScore(Cat("Fuzz Lightyear"),50)
@@ -11,6 +25,12 @@ fun main(){
     petContest.addScore(Fish("Finny McGray"),56)
     val topAnimal = petContest.getWinners().first().name
     println(topAnimal)
+    catContest.vet.treat(Cat("Boz"))
+
+    val dogRetailer:Retailer<Dog> = DogRetailer()
+    val catRetailer:Retailer<Cat> = CatRetailer()
+    val petRetailer:Retailer<Pet> = CatRetailer()
+    dogRetailer.sell()
 }
 
 abstract class Pet(var name:String)
@@ -21,7 +41,7 @@ class Dog(name:String):Pet(name)
 
 class Fish(name:String):Pet(name)
 
-class Contest<T:Pet>/*(t:T)*/{
+class Contest<T:Pet>(var vet: Vet<in T>){
     private val scores: MutableMap<T,Int> = mutableMapOf()
 
     fun addScore(t:T, score: Int = 0){
@@ -51,14 +71,20 @@ class CatRetailer:Retailer<Cat>{
 
 class DogRetailer:Retailer<Dog>{
     override fun sell(): Dog {
-        println("Sell Cat")
+        println("Sell Dog")
         return Dog("")
     }
 }
 
 class FishRetailer:Retailer<Fish>{
     override fun sell(): Fish {
-        println("Sell Cat")
+        println("Sell Fish")
         return Fish("")
+    }
+}
+
+class Vet<T:Pet>{
+    fun treat(t:T){
+        println("Treating Pet ${t.name}")
     }
 }
